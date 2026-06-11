@@ -1,0 +1,168 @@
+@use '@/styles/variables.scss' as *;
+
+.buddyListItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+}
+
+.avatarWrap {
+  position: relative;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-round;
+  background: $color-bg-gray;
+}
+
+.onlineDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-round;
+  position: absolute;
+  bottom: 4rpx;
+  right: 4rpx;
+  border: 3rpx solid #fff;
+}
+
+.infoWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.infoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.nickname {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.matchBadge {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: 22rpx;
+  font-weight: $font-weight-semibold;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.schoolMajor {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+  margin-bottom: 8rpx;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  gap: $spacing-sm;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  width: 4rpx;
+  height: 4rpx;
+  background: $color-text-disabled;
+  border-radius: 50%;
+  margin: 0 4rpx;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: $spacing-sm;
+}
+
+.tag {
+  font-size: 20rpx;
+  color: $color-primary;
+  background: $color-primary-bg;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+}
+
+.plan {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-top: $spacing-sm;
+  @include text-ellipsis-multi(2);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.location {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+}
+
+.applyBtn {
+  @include button-reset;
+  height: 56rpx;
+  padding: 0 32rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-round;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.anonymousBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  background: $color-bg-gray;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-left: 8rpx;
+}

@@ -1,0 +1,116 @@
+@use '@/styles/variables.scss' as *;
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+
+  &.done {
+    .title {
+      text-decoration: line-through;
+      color: $color-text-tertiary;
+    }
+  }
+}
+
+.checkbox {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: $radius-round;
+  border: 3rpx solid $color-border;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &.checked {
+    background: $color-primary;
+    border-color: $color-primary;
+
+    &::after {
+      content: '✓';
+      color: #fff;
+      font-size: 24rpx;
+      font-weight: bold;
+    }
+  }
+}
+
+.taskContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: 1.4;
+  @include text-ellipsis;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  gap: $spacing-sm;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+}
+
+.duration {
+  display: flex;
+  align-items: center;
+}
+
+.sharedBadge {
+  font-size: 20rpx;
+  color: $color-secondary;
+  background: $color-secondary-bg;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+}
+
+.dot {
+  width: 4rpx;
+  height: 4rpx;
+  background: $color-text-disabled;
+  border-radius: 50%;
+}
+
+.statusTag {
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+  flex-shrink: 0;
+
+  &.doing {
+    color: $color-primary;
+    background: $color-primary-bg;
+  }
+
+  &.done {
+    color: $color-success;
+    background: $color-success-bg;
+  }
+
+  &.pending {
+    color: $color-text-tertiary;
+    background: $color-bg-gray;
+  }
+}

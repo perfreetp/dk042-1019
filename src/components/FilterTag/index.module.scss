@@ -1,0 +1,25 @@
+@use '@/styles/variables.scss' as *;
+
+.filterTag {
+  @include button-reset;
+  height: 56rpx;
+  padding: 0 $spacing-md;
+  background: $color-bg-gray;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  margin-bottom: $spacing-sm;
+  border: none;
+  transition: all $transition-fast;
+
+  &.active {
+    background: $color-primary-bg;
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
