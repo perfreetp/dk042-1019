@@ -106,7 +106,67 @@ export interface BuddyRequest {
   toUserId: string;
   status: 'pending' | 'accepted' | 'rejected';
   message?: string;
+  checkinCycle?: number;
+  commonGoal?: string;
+  applyNote?: string;
   createdAt: string;
+}
+
+// 聊天消息链接
+export interface ChatLink {
+  url: string;
+  title: string;
+  icon?: string;
+  meta?: string;
+  desc?: string;
+}
+
+// 计划调整请求
+export interface PlanRequest {
+  studyStage?: StudyStage;
+  dailyHours?: DailyHours;
+  scheduleType?: ScheduleType;
+  superviseType?: SuperviseType;
+  commonGoal?: string;
+  checkinCycle?: number;
+  reason?: string;
+  status?: 'pending' | 'approved' | 'rejected';
+}
+
+// 聊天消息
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  type: 'text' | 'link' | 'system' | 'plan_request' | 'plan_response';
+  timestamp: number;
+  read: boolean;
+  link?: ChatLink;
+  planRequest?: PlanRequest;
+}
+
+// 番茄钟记录
+export interface PomodoroSession {
+  id: string;
+  duration: number;
+  startTime: number;
+  endTime: number;
+  taskId?: string;
+  taskName?: string;
+}
+
+// 任务 - 增加 completed 字段兼容新旧代码
+export interface Task {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  completed?: boolean;
+  duration?: number;
+  estimatedMinutes?: number;
+  startTime?: string;
+  endTime?: string;
+  isShared?: boolean;
 }
 
 // 小组自习室

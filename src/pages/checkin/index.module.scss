@@ -82,6 +82,46 @@
   transition: width $transition-base;
 }
 
+.focusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.focusItem {
+  flex: 1;
+  text-align: center;
+}
+
+.focusLabel {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+  margin-bottom: 6rpx;
+  display: block;
+}
+
+.focusValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+}
+
+.focusUnit {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  opacity: 0.85;
+}
+
+.focusDivider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .section {
   margin: $spacing-md $page-padding;
 }
@@ -205,7 +245,7 @@
 
 .statNum {
   font-size: $font-size-xl;
-  font-weight: $font-bold;
+  font-weight: $font-weight-bold;
   color: $color-primary;
   line-height: 1.2;
 }
@@ -326,6 +366,11 @@
   border-radius: $radius-xs $radius-xs 0 0;
   transition: height $transition-base;
   min-height: 8rpx;
+
+  &.barFillToday {
+    background: linear-gradient(180deg, $color-secondary 0%, #6B95FF 100%);
+    box-shadow: 0 0 12rpx rgba(74, 123, 255, 0.4);
+  }
 }
 
 .barLabel {

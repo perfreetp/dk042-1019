@@ -86,7 +86,7 @@
   &.otherMsg {
     background: $color-bg-card;
     color: $color-text-primary;
-    box-shadow: $shadow-light;
+    box-shadow: $shadow-card;
     border-top-left-radius: $radius-xs;
   }
 
@@ -114,7 +114,7 @@
   border-radius: $radius-md;
   padding: $spacing-md;
   margin-top: 12rpx;
-  box-shadow: $shadow-light;
+  box-shadow: $shadow-card;
   border: 2rpx solid $color-border-light;
 
   .isMine & {

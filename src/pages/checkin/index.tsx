@@ -6,15 +6,22 @@ import {
   ScrollView
 } from '@tarojs/components';
 import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
+import classnames from 'classnames';
 import styles from './index.module.scss';
 import TaskItem from '@/components/TaskItem';
 import { useAppStore } from '@/store/useAppStore';
-import { weeklySummary, pomodoroRecords, absenceRecords } from '@/data/tasks';
+import { absenceRecords } from '@/data/tasks';
 import { formatMinutes } from '@/utils';
 import type { Task } from '@/types';
 
 const CheckinPage: React.FC = () => {
-  const { tasks, toggleTaskStatus } = useAppStore();
+  const {
+    tasks,
+    toggleTaskStatus,
+    weeklySummary,
+    todayFocusMinutes,
+    pomodoroSessions
+  } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
 
   const today = new Date();
@@ -62,10 +69,45 @@ const CheckinPage: React.FC = () => {
   });
 
   useDidShow(() => {
-    console.log('[Checkin] 页面显示');
+    console.log('[Checkin] 页面显示, todayFocusMinutes:', todayFocusMinutes, 'weeklyHours:', weeklySummary.totalStudyHours);
   });
 
-  const maxMinutes = Math.max(...pomodoroRecords.map((r) => r.focusMinutes));
+  // 今日专注小时（保留1位小数）
+  const todayFocusHours = Number((todayFocusMinutes / 60).toFixed(1));
+
+  // 本周每天专注时长记录（用最近7天的番茄钟数据）
+  const weekRecords = useMemo(() => {
+    const now = new Date();
+    const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
+    const records: { date: string; label: string; focusMinutes: number }[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dayStr = `${d.getMonth() + 1}/${d.getDate()}`;
+      const dayOfWeek = weekDays[d.getDay() === 0 ? 6 : d.getDay() - 1];
+
+      // 计算当天的专注分钟数
+      const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+      const dayMinutes = pomodoroSessions
+        .filter(s => s.startTime >= dayStart && s.startTime < dayEnd)
+        .reduce((sum, s) => sum + s.duration, 0);
+
+      // 今日用实时的 todayFocusMinutes
+      const isToday = i === 0;
+      const finalMinutes = isToday ? Math.max(dayMinutes, todayFocusMinutes) : dayMinutes;
+
+      records.push({
+        date: dayStr,
+        label: isToday ? '今天' : dayOfWeek,
+        focusMinutes: finalMinutes
+      });
+    }
+    return records;
+  }, [pomodoroSessions, todayFocusMinutes]);
+
+  const maxMinutes = Math.max(...weekRecords.map((r) => r.focusMinutes), 60);
 
   return (
     <ScrollView className={styles.checkinPage} scrollY enhanced>
@@ -90,6 +132,36 @@ const CheckinPage: React.FC = () => {
               className={styles.progressFill}
               style={{ width: `${progress}%` }}
             />
+          </View>
+        </View>
+
+        <View className={styles.focusRow}>
+          <View className={styles.focusItem}>
+            <Text className={styles.focusLabel}>今日专注</Text>
+            <Text className={styles.focusValue}>
+              {todayFocusHours}
+              <Text className={styles.focusUnit}> h</Text>
+            </Text>
+          </View>
+          <View className={styles.focusDivider} />
+          <View className={styles.focusItem}>
+            <Text className={styles.focusLabel}>番茄钟</Text>
+            <Text className={styles.focusValue}>
+              {pomodoroSessions.filter(s => {
+                const now = new Date();
+                const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                return s.startTime >= dayStart;
+              }).length}
+              <Text className={styles.focusUnit}> 个</Text>
+            </Text>
+          </View>
+          <View className={styles.focusDivider} />
+          <View className={styles.focusItem}>
+            <Text className={styles.focusLabel}>本周累计</Text>
+            <Text className={styles.focusValue}>
+              {weeklySummary.totalStudyHours}
+              <Text className={styles.focusUnit}> h</Text>
+            </Text>
           </View>
         </View>
       </View>
@@ -166,20 +238,25 @@ const CheckinPage: React.FC = () => {
             </View>
           </View>
 
-          {/* 周学习时长图表 */}
+          {/* 周学习时长图表（实时数据） */}
           <View className={styles.weekChart}>
-            {pomodoroRecords.map((record) => {
+            {weekRecords.map((record, idx) => {
               const height = maxMinutes > 0 ? (record.focusMinutes / maxMinutes) * 100 : 0;
               return (
-                <View key={record.id} className={styles.chartBar}>
+                <View key={idx} className={styles.chartBar}>
                   <Text className={styles.barValue}>
-                    {Math.round(record.focusMinutes / 60)}h
+                    {record.focusMinutes >= 60
+                      ? `${Math.round(record.focusMinutes / 60)}h`
+                      : `${record.focusMinutes}m`}
                   </Text>
                   <View
-                    className={styles.barFill}
+                    className={classnames(
+                      styles.barFill,
+                      record.label === '今天' && styles.barFillToday
+                    )}
                     style={{ height: `${Math.max(height, 5)}%` }}
                   />
-                  <Text className={styles.barLabel}>{record.date}</Text>
+                  <Text className={styles.barLabel}>{record.label}</Text>
                 </View>
               );
             })}
