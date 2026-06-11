@@ -1,5 +1,5 @@
 export default definePageConfig({
-  navigationBarTitleText: '番茄计时',
-  navigationBarBackgroundColor: '#FF7D00',
+  navigationBarTitleText: '番茄钟',
+  navigationBarBackgroundColor: '#4A7BFF',
   navigationBarTextStyle: 'white'
 });

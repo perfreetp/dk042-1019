@@ -113,3 +113,55 @@
   color: $color-text-tertiary;
   font-size: $font-size-sm;
 }
+
+.activeFilterBar {
+  background: $color-primary-bg;
+  margin: 0 $page-padding $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+}
+
+.activeFilterTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.activeFilterLabel {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.clearBtn {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  opacity: 0.8;
+
+  &:active {
+    opacity: 0.5;
+  }
+}
+
+.activeFilterTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.activeFilterTag {
+  font-size: 20rpx;
+  color: $color-primary;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  display: flex;
+  align-items: center;
+}
+
+.tagClose {
+  margin-left: 6rpx;
+  font-weight: bold;
+  opacity: 0.6;
+}

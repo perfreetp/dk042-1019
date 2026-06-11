@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   Image,
   Button,
-  ScrollView
+  ScrollView,
+  Input
 } from '@tarojs/components';
 import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -15,12 +16,55 @@ import { useAppStore } from '@/store/useAppStore';
 import { getStageLabel, getHoursLabel, getScheduleLabel } from '@/utils';
 
 const HomePage: React.FC = () => {
-  const { userProfile, filterParams, setFilterParams } = useAppStore();
+  const { userProfile, filterParams, setFilterParams, clearFilterParams } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [schoolInput, setSchoolInput] = useState(filterParams.targetSchool || '');
+  const [majorInput, setMajorInput] = useState(filterParams.targetMajor || '');
 
   const stages = ['preliminary', 'foundation', 'strengthen', 'sprint'];
   const hoursOptions = ['less4', '4to6', '6to8', '8to10', 'more10'];
   const schedules = ['early_bird', 'normal', 'night_owl'];
+
+  const hasActiveFilter = useMemo(() => {
+    return Object.keys(filterParams).some(
+      (k) => filterParams[k as keyof typeof filterParams] !== undefined
+        && filterParams[k as keyof typeof filterParams] !== ''
+    );
+  }, [filterParams]);
+
+  const activeFilterCount = useMemo(() => {
+    return Object.values(filterParams).filter(
+      (v) => v !== undefined && v !== ''
+    ).length;
+  }, [filterParams]);
+
+  const handleSchoolChange = useCallback((e: any) => {
+    const value = e.detail.value || '';
+    setSchoolInput(value);
+    setFilterParams({ targetSchool: value || undefined });
+  }, [setFilterParams]);
+
+  const handleMajorChange = useCallback((e: any) => {
+    const value = e.detail.value || '';
+    setMajorInput(value);
+    setFilterParams({ targetMajor: value || undefined });
+  }, [setFilterParams]);
+
+  const handleClearSchool = useCallback(() => {
+    setSchoolInput('');
+    setFilterParams({ targetSchool: undefined });
+  }, [setFilterParams]);
+
+  const handleClearMajor = useCallback(() => {
+    setMajorInput('');
+    setFilterParams({ targetMajor: undefined });
+  }, [setFilterParams]);
+
+  const handleClearAll = useCallback(() => {
+    setSchoolInput('');
+    setMajorInput('');
+    clearFilterParams();
+  }, [clearFilterParams]);
 
   const handleStageClick = useCallback((stage: string) => {
     setFilterParams({
@@ -84,10 +128,28 @@ const HomePage: React.FC = () => {
   });
 
   useDidShow(() => {
-    console.log('[Home] 页面显示');
+    setSchoolInput(filterParams.targetSchool || '');
+    setMajorInput(filterParams.targetMajor || '');
+    console.log('[Home] 页面显示, 当前筛选:', filterParams);
   });
 
-  const recommendBuddies = buddyList.slice(0, 5);
+  const recommendBuddies = useMemo(() => {
+    let list = buddyList.slice();
+    if (filterParams.targetSchool) {
+      list = list.filter((b) =>
+        b.targetSchool.includes(filterParams.targetSchool!)
+      );
+    }
+    if (filterParams.targetMajor) {
+      list = list.filter((b) =>
+        b.targetMajor.includes(filterParams.targetMajor!)
+      );
+    }
+    if (list.length < 5) {
+      return buddyList.slice(0, 5);
+    }
+    return list.slice(0, 5);
+  }, [filterParams.targetSchool, filterParams.targetMajor]);
 
   return (
     <View className={styles.homePage}>
@@ -151,9 +213,53 @@ const HomePage: React.FC = () => {
         <View className={styles.filterCard}>
           <View className={styles.cardHeader}>
             <Text className={styles.cardTitle}>匹配筛选</Text>
-            <Text className={styles.moreBtn}>
-              更多筛选 ›
+            <Text
+              className={styles.moreBtn}
+              onClick={handleClearAll}
+              style={{ display: hasActiveFilter ? 'flex' : 'none' }}
+            >
+              清空筛选
             </Text>
+          </View>
+
+          {/* 目标院校输入 */}
+          <View className={styles.inputGroup}>
+            <Text className={styles.groupLabel}>目标院校</Text>
+            <View className={styles.inputRow}>
+              <Text className={styles.inputIcon}>🏫</Text>
+              <Input
+                className={styles.inputField}
+                placeholder="请输入目标院校（如：北京大学）"
+                placeholderClass="input-placeholder"
+                value={schoolInput}
+                onInput={handleSchoolChange}
+              />
+              {schoolInput && (
+                <View className={styles.clearBtn} onClick={handleClearSchool}>
+                  <Text>×</Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* 目标专业输入 */}
+          <View className={styles.inputGroup}>
+            <Text className={styles.groupLabel}>目标专业</Text>
+            <View className={styles.inputRow}>
+              <Text className={styles.inputIcon}>📖</Text>
+              <Input
+                className={styles.inputField}
+                placeholder="请输入目标专业（如：计算机）"
+                placeholderClass="input-placeholder"
+                value={majorInput}
+                onInput={handleMajorChange}
+              />
+              {majorInput && (
+                <View className={styles.clearBtn} onClick={handleClearMajor}>
+                  <Text>×</Text>
+                </View>
+              )}
+            </View>
           </View>
 
           <View className={styles.filterGroup}>
@@ -197,11 +303,24 @@ const HomePage: React.FC = () => {
               ))}
             </View>
           </View>
+
+          {hasActiveFilter && (
+            <View className={styles.clearFilterBar}>
+              <Text className={styles.filterActiveHint}>
+                ✨ 已设置 {activeFilterCount} 个筛选条件，匹配结果将更精准
+              </Text>
+              <Text className={styles.clearAllBtn} onClick={handleClearAll}>
+                清空全部
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* 推荐搭子 */}
         <View className={styles.sectionHeader}>
-          <Text className={styles.sectionTitle}>为你推荐</Text>
+          <Text className={styles.sectionTitle}>
+            {hasActiveFilter ? '筛选结果推荐' : '为你推荐'}
+          </Text>
           <Text className={styles.seeMore} onClick={handleSeeAll}>查看全部 ›</Text>
         </View>
 
@@ -220,7 +339,7 @@ const HomePage: React.FC = () => {
       {/* 底部操作按钮 */}
       <View className={styles.bottomAction}>
         <Button className={styles.matchBtn} onClick={handleStartMatch}>
-          开始匹配搭子
+          {hasActiveFilter ? `按条件匹配搭子（${activeFilterCount}项筛选）` : '开始匹配搭子'}
         </Button>
       </View>
     </View>
